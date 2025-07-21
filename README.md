@@ -5,7 +5,7 @@
 1. Клонируйте репозиторий или скопируйте проект в нужную папку.
 2. Перейдите в папку проекта:
    ```bash
-   cd api-orders
+   cd it-up-company-tz
    ```
 3. Установите зависимости:
    ```bash
@@ -97,3 +97,5 @@ php artisan api:orders <token> --composition=extended --per_page=5
 # Смена статуса заказа
 php artisan api:change-status <token> <order_id> <status_id>
 ```
+
+Описание тестового задания лежит в файле `Тестовое задание - PHP-разработчик (Laravel Framework) - IT Up company.docx` в корне проекта
