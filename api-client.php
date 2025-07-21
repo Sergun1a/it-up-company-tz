@@ -79,4 +79,4 @@ switch ($cmd) {
         echo "  orders token [composition=extended|short]\n";
         echo "  change-status token order_id status_id\n";
         break;
-} 
+}

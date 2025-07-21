@@ -9,7 +9,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Защищённые маршруты API
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth_check')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders/{order}/change-status', [OrderController::class, 'changeStatus']);
 });

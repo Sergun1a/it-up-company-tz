@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Status;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use InvalidArgumentException;
 
 class OrderController extends Controller
 {
@@ -41,7 +43,13 @@ class OrderController extends Controller
 
         // Пагинация
         $perPage = $request->input('per_page', 10);
-        $orders = $query->paginate($perPage);
+        $page = $request->input('page', 1);
+        try {
+            $orders = $query->paginate($perPage, ['*'], 'page', $page);
+        } catch (InvalidArgumentException $ex) {
+            return response()->json(['error' => 'Недопустимый номер  страницы'], 404);
+        }
+
 
         return response()->json($orders);
     }
@@ -58,12 +66,21 @@ class OrderController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        $order = Order::findOrFail($orderId);
-        $newStatus = Status::findOrFail($request->input('status_id'));
+        try {
+            $order = Order::findOrFail($orderId);
+        } catch (ModelNotFoundException $ex) {
+            return response()->json(['error' => 'Заказ не найден'], 404);
+        }
+
+        try {
+            $newStatus = Status::findOrFail($request->input('status_id'));
+        } catch (ModelNotFoundException $ex) {
+            return response()->json(['error' => 'Статус не найден'], 404);
+        }
 
         // Проверка: можно ли менять статус
-        if (!$newStatus->is_changeable) {
-            return response()->json(['error' => 'Смена на этот статус запрещена'], 403);
+        if (!$order->status->is_changeable) {
+            return response()->json(['error' => 'Статус заказа нельзя изменить'], 403);
         }
 
         $order->status_id = $newStatus->id;
